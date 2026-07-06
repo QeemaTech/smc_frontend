@@ -1,15 +1,15 @@
 import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useProducts, useProductCategories } from '@/hooks/useApi';
 import { getLocalizedLink } from '@/hooks/useLocalizedNavigate';
-import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PublicPageHeader, PublicShell } from '@/components/public/PublicShell';
+import { ProductCard } from '@/components/public/cards';
 import { usePageHero } from '@/hooks/usePageContent';
 import { cn, resolveImageSrc } from '@/lib/utils';
 import { pickLocalized } from '@/lib/localize';
-import { Factory, Loader2, Package } from 'lucide-react';
+import { getProductIconName } from '@/lib/productIcons';
+import { Loader2, Package } from 'lucide-react';
 import heroSlideOne from '@/assets/manganese/one.jpeg';
 import heroSlideTwo from '@/assets/manganese/two.jpg';
 import heroSlideThree from '@/assets/manganese/three.jpg';
@@ -78,7 +78,7 @@ const ProductsMain = () => {
   const renderProductsGrid = (productsToRender: any[]) => {
     if (productsToRender.length === 0) {
       return (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border py-16 text-center">
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border py-16 text-center keep-center animate-fade-in">
           <Package className="mb-4 h-12 w-12 text-muted-foreground" />
           <h3 className="text-xl font-semibold">{t('noProductsFound')}</h3>
           <p className="mt-2 max-w-md text-sm text-muted-foreground">{t('noProductsFoundCategory')}</p>
@@ -91,7 +91,7 @@ const ProductsMain = () => {
         className="grid grid-cols-1 items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3"
         dir={isRTL ? 'rtl' : 'ltr'}
       >
-        {productsToRender.map((product) => {
+        {productsToRender.map((product, index) => {
           const imageSrc = resolveImageSrc(product.image, {
             cacheKey: product.updated_at || product.updatedAt,
             fallback: productFallbackImages[product.id % productFallbackImages.length],
@@ -100,40 +100,23 @@ const ProductsMain = () => {
           const productDescription = pickLocalized(product, 'description', language);
 
           return (
-            <Link
+            <ProductCard
               key={product.id}
               to={getLocalizedLink(`/product/${product.id}`, language)}
-              className="block h-full"
-            >
-              <Card className="group flex h-full flex-col overflow-hidden border border-border/80 shadow-md transition-all duration-200 hover:-translate-y-1 hover:shadow-lg">
-                <div className="relative h-52 shrink-0 overflow-hidden bg-muted sm:h-56">
-                  <img
-                    src={imageSrc}
-                    alt={productName}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    loading="lazy"
-                    onError={(event) => {
-                      const target = event.currentTarget;
-                      const fallback = productFallbackImages[product.id % productFallbackImages.length];
-                      if (target.src !== fallback) {
-                        target.src = fallback;
-                      }
-                    }}
-                  />
-                  <div className="absolute end-3 top-3 rounded-full bg-primary/90 p-2.5 backdrop-blur-sm">
-                    <Factory className="h-4 w-4 text-white" />
-                  </div>
-                </div>
-                <CardContent className="flex flex-1 flex-col p-5 text-start">
-                  <CardTitle className="mb-2 line-clamp-2 min-h-[3.25rem] text-xl font-semibold">
-                    {productName}
-                  </CardTitle>
-                  <p className="line-clamp-3 flex-1 text-sm leading-relaxed text-muted-foreground">
-                    {productDescription}
-                  </p>
-                </CardContent>
-              </Card>
-            </Link>
+              imageSrc={imageSrc}
+              imageAlt={productName}
+              title={productName}
+              description={productDescription}
+              iconName={getProductIconName(product.name ?? productName)}
+              index={index}
+              onImageError={(event) => {
+                const target = event.currentTarget;
+                const fallback = productFallbackImages[product.id % productFallbackImages.length];
+                if (target.src !== fallback) {
+                  target.src = fallback;
+                }
+              }}
+            />
           );
         })}
       </div>
@@ -165,12 +148,12 @@ const ProductsMain = () => {
           <Tabs
             value={selectedCategory}
             onValueChange={setSelectedCategory}
-            className="w-full"
+            className="w-full animate-fade-in"
             dir={isRTL ? 'rtl' : 'ltr'}
           >
             <TabsList
               className={cn(
-                'products-tab-list mb-4 h-auto w-full justify-start bg-muted/50',
+                'products-tab-list mb-8 h-auto w-full justify-start',
                 isRTL ? 'flex flex-wrap' : 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:flex xl:flex-wrap',
               )}
             >

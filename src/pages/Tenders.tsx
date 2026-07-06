@@ -1,6 +1,5 @@
 import { useState, useRef } from 'react';
 import { FileText, Calendar, AlertCircle, Upload, X, Download } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,6 +12,7 @@ import { useTenders, useSubmitTender } from '@/hooks/useApi';
 import { toast } from 'sonner';
 import { usePageHero } from '@/hooks/usePageContent';
 import { PublicPageHeader, PublicShell } from '@/components/public/PublicShell';
+import { ContentCard } from '@/components/public/cards';
 
 const Tenders = () => {
   const { t, language } = useLanguage();
@@ -116,54 +116,50 @@ const Tenders = () => {
           </div>
         ) : (
           <div className="space-y-6 mb-16">
-            {activeTenders.map((tender) => (
-              <Card key={tender.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <CardTitle className="text-2xl mb-2">{pickLocalized(tender, 'title', language)}</CardTitle>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <span className="flex items-center gap-2">
-                          <FileText className="w-4 h-4" />
-                          T-{tender.id}
-                        </span>
-                        <span className="px-3 py-1 bg-primary/10 text-primary rounded-full">
-                          {pickLocalized(tender, 'category', language)}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm font-medium shrink-0">
-                      <Calendar className="w-4 h-4" />
-                      <span>
-                        {t('deadlineLabel')}
-                        <span className="ltr-nums">{new Date(tender.deadline).toLocaleDateString()}</span>
+            {activeTenders.map((tender, index) => (
+              <ContentCard key={tender.id} index={index} className="p-6 md:p-8">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="text-start">
+                    <h3 className="mb-2 text-2xl font-medium">{pickLocalized(tender, 'title', language)}</h3>
+                    <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+                      <span className="flex items-center gap-2">
+                        <FileText className="h-4 w-4" />
+                        T-{tender.id}
+                      </span>
+                      <span className="rounded-full bg-primary-container px-3 py-1 text-primary">
+                        {pickLocalized(tender, 'category', language)}
                       </span>
                     </div>
                   </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground mb-4">{pickLocalized(tender, 'description', language)}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {tender.documentFile && (
-                      <Button
-                        variant="outline"
-                        onClick={() => {
-                          const link = document.createElement('a');
-                          link.href = tender.documentFile!;
-                          link.download = tender.documentFileName || `tender-${tender.id}.pdf`;
-                          link.click();
-                        }}
-                      >
-                        <Download className="h-4 w-4 me-2" />
-                        {t('downloadTenderDocument')}
-                      </Button>
-                    )}
-                    <Button className="ms-auto" onClick={() => handleOpenDialog(tender)}>
-                      {t('submitProposal')}
-                    </Button>
+                  <div className="flex shrink-0 items-center gap-2 text-sm font-medium">
+                    <Calendar className="h-4 w-4" />
+                    <span>
+                      {t('deadlineLabel')}
+                      <span className="ltr-nums">{new Date(tender.deadline).toLocaleDateString()}</span>
+                    </span>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+                <p className="mt-4 text-start text-muted-foreground">{pickLocalized(tender, 'description', language)}</p>
+                <div className="mt-6 flex flex-wrap gap-2">
+                  {tender.documentFile && (
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        const link = document.createElement('a');
+                        link.href = tender.documentFile!;
+                        link.download = tender.documentFileName || `tender-${tender.id}.pdf`;
+                        link.click();
+                      }}
+                    >
+                      <Download className="h-4 w-4 me-2" />
+                      {t('downloadTenderDocument')}
+                    </Button>
+                  )}
+                  <Button className="ms-auto" onClick={() => handleOpenDialog(tender)}>
+                    {t('submitProposal')}
+                  </Button>
+                </div>
+              </ContentCard>
             ))}
             {activeTenders.length === 0 && (
               <div className="text-center py-12">

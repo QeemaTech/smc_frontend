@@ -16,6 +16,8 @@ export default {
       fontFamily: {
         sans: ["Roboto", "Roboto Flex", "system-ui", "sans-serif"],
         arabic: ["Tajawal", "Roboto", "system-ui", "sans-serif"],
+        heading: ["'Plus Jakarta Sans'", "Roboto", "system-ui", "sans-serif"],
+        body: ["Inter", "Roboto", "system-ui", "sans-serif"],
       },
       boxShadow: {
         "elevation-1": "var(--md-elevation-1)",
@@ -100,10 +102,20 @@ export default {
             height: "0",
           },
         },
+        "fade-in-up": {
+          from: { opacity: "0", transform: "translateY(20px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
+        "fade-in": {
+          from: { opacity: "0" },
+          to: { opacity: "1" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "fade-in-up": "fade-in-up 0.55s cubic-bezier(0.2, 0, 0, 1) both",
+        "fade-in": "fade-in 0.45s ease both",
       },
     },
   },

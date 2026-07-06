@@ -1,8 +1,8 @@
 import { Ship, Package, TrendingUp, Shield } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { usePageHero } from '@/hooks/usePageContent';
 import { PublicPageHeader, PublicShell } from '@/components/public/PublicShell';
+import { ContentCard } from '@/components/public/cards';
 
 const PrivatePort = () => {
   const { t } = useLanguage();
@@ -58,53 +58,41 @@ const PrivatePort = () => {
       />
 
       <PublicShell className="space-y-12 py-8 md:py-10">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {features.map((feature, index) => (
-            <Card key={index} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <feature.icon className="w-12 h-12 text-primary mb-4" />
-                <CardTitle className="text-2xl">{feature.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">{feature.description}</p>
-              </CardContent>
-            </Card>
+            <ContentCard key={index} index={index} className="p-6 md:p-8">
+              <feature.icon className="mb-4 h-12 w-12 text-primary" />
+              <h3 className="mb-2 text-2xl font-medium">{feature.title}</h3>
+              <p className="text-muted-foreground">{feature.description}</p>
+            </ContentCard>
           ))}
         </div>
 
         <div>
-          <h2 className="text-3xl font-bold mb-8 text-center">{t('portCapabilities')}</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-xl">{t('portLoadingShipping')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-3 text-start">
-                  {loadingItems.map((item, index) => (
-                    <li key={index} className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <span className="text-muted-foreground">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-xl">{t('portStorageHandling')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-3 text-start">
-                  {storageItems.map((item, index) => (
-                    <li key={index} className="flex items-start gap-2">
-                      <span className="text-primary mt-1">•</span>
-                      <span className="text-muted-foreground">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
+          <h2 className="section-heading__title mb-8 text-center keep-center">{t('portCapabilities')}</h2>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <ContentCard index={0} className="p-6 md:p-8">
+              <h3 className="mb-4 text-xl font-medium">{t('portLoadingShipping')}</h3>
+              <ul className="space-y-3 text-start">
+                {loadingItems.map((item, itemIndex) => (
+                  <li key={itemIndex} className="flex items-start gap-2">
+                    <span className="mt-1 text-primary">•</span>
+                    <span className="text-muted-foreground">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </ContentCard>
+            <ContentCard index={1} className="p-6 md:p-8">
+              <h3 className="mb-4 text-xl font-medium">{t('portStorageHandling')}</h3>
+              <ul className="space-y-3 text-start">
+                {storageItems.map((item, itemIndex) => (
+                  <li key={itemIndex} className="flex items-start gap-2">
+                    <span className="mt-1 text-primary">•</span>
+                    <span className="text-muted-foreground">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </ContentCard>
           </div>
         </div>
       </PublicShell>

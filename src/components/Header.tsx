@@ -187,9 +187,15 @@ const Header = () => {
             variant="outline"
             size="sm"
             onClick={toggleLanguage}
-            className="hidden h-9 shrink-0 gap-1.5 whitespace-nowrap rounded-full border-border/80 px-3 text-[13px] sm:inline-flex xl:h-10 xl:px-4 xl:text-sm"
+            className="lang-switch-btn hidden h-9 shrink-0 gap-2 whitespace-nowrap rounded-full border-border/80 px-3 text-[13px] sm:inline-flex xl:h-10 xl:px-4 xl:text-sm"
           >
-            <MaterialIcon name="language" size={18} />
+            <span
+              aria-hidden="true"
+              className={cn(
+                "lang-flag",
+                language === "en" ? "lang-flag--eg" : "lang-flag--us",
+              )}
+            />
             <span>{language === "en" ? "العربية" : "English"}</span>
           </Button>
 
@@ -197,10 +203,16 @@ const Header = () => {
             variant="ghost"
             size="icon"
             onClick={toggleLanguage}
-            className="h-9 w-9 shrink-0 rounded-full sm:hidden"
+            className="lang-switch-btn h-9 w-9 shrink-0 rounded-full sm:hidden"
             aria-label="Toggle language"
           >
-            <MaterialIcon name="language" size={20} />
+            <span
+              aria-hidden="true"
+              className={cn(
+                "lang-flag",
+                language === "en" ? "lang-flag--eg" : "lang-flag--us",
+              )}
+            />
           </Button>
 
           <button

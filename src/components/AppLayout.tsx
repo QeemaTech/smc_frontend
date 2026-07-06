@@ -16,7 +16,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
   return (
     <div className="flex flex-col min-h-screen">
       {!isLoginPage && !isDashboardPage && <Header />}
-      <main className={cn('public-layout flex-grow', !isLoginPage && !isDashboardPage && 'pt-[72px]')}>
+      <main className={cn('public-layout flex-grow page-transition', !isLoginPage && !isDashboardPage && 'pt-[72px]')}>
         {children}
       </main>
       {!isLoginPage && !isDashboardPage && <Footer />}

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { TrendingUp, DollarSign, PieChart, BarChart3, ArrowUpRight, ArrowDownRight, Activity } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ContentCard } from '@/components/public/cards';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from '@/components/ui/chart';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { usePageHero } from '@/hooks/usePageContent';
@@ -225,51 +226,47 @@ const Financial = () => {
         {/* Key Metrics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {highlights.map((highlight, index) => (
-            <Card key={index} className="hover:shadow-lg transition-all hover:-translate-y-1">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="rounded-lg bg-primary/10 p-3">
-                      <highlight.icon className="h-6 w-6 text-primary" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">{highlight.title}</p>
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-3xl font-bold ltr-nums">{highlight.value}</span>
-                        {highlight.unit && <span className="text-sm text-muted-foreground ltr-nums">{highlight.unit}</span>}
-                      </div>
-                    </div>
+            <ContentCard key={index} index={index} className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="rounded-xl bg-primary-container p-3">
+                    <highlight.icon className="h-6 w-6 text-primary" />
                   </div>
-                  <div className="flex flex-col items-end">
-                    {highlight.trend === 'up' && (
-                      <div className="flex items-center gap-1 text-green-600">
-                        <ArrowUpRight className="h-4 w-4" />
-                        <span className="text-sm font-semibold">{highlight.change}</span>
-                      </div>
-                    )}
-                    {highlight.trend === 'down' && (
-                      <div className="flex items-center gap-1 text-red-600">
-                        <ArrowDownRight className="h-4 w-4" />
-                        <span className="text-sm font-semibold">{highlight.change}</span>
-                      </div>
-                    )}
-                    {highlight.trend === 'stable' && (
-                      <div className="flex items-center gap-1 text-gray-600">
-                        <span className="text-sm font-semibold">{highlight.change}</span>
-                      </div>
-                    )}
+                  <div className="text-start">
+                    <p className="text-sm text-muted-foreground">{highlight.title}</p>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-3xl font-bold ltr-nums">{highlight.value}</span>
+                      {highlight.unit && <span className="text-sm text-muted-foreground ltr-nums">{highlight.unit}</span>}
+                    </div>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">{highlight.description}</p>
-              </CardContent>
-            </Card>
+                <div className="flex flex-col items-end">
+                  {highlight.trend === 'up' && (
+                    <div className="flex items-center gap-1 text-green-600">
+                      <ArrowUpRight className="h-4 w-4" />
+                      <span className="text-sm font-semibold">{highlight.change}</span>
+                    </div>
+                  )}
+                  {highlight.trend === 'down' && (
+                    <div className="flex items-center gap-1 text-red-600">
+                      <ArrowDownRight className="h-4 w-4" />
+                      <span className="text-sm font-semibold">{highlight.change}</span>
+                    </div>
+                  )}
+                  {highlight.trend === 'stable' && (
+                    <div className="flex items-center gap-1 text-gray-600">
+                      <span className="text-sm font-semibold">{highlight.change}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <p className="mt-4 text-start text-sm text-muted-foreground">{highlight.description}</p>
+            </ContentCard>
           ))}
         </div>
 
         {/* Revenue Growth Chart */}
-        <Card className="mb-8">
+        <Card className="mb-8 md-content-card md-content-card--hover border-border/60 shadow-elevation-1">
           <CardHeader>
             <CardTitle className="text-2xl">{t('revenueGrowth')}</CardTitle>
             <p className="text-sm text-muted-foreground">{t('revenueGrowthDescription')}</p>
@@ -316,7 +313,7 @@ const Financial = () => {
         </Card>
 
         {/* Production vs Target */}
-        <Card className="mb-8">
+        <Card className="mb-8 md-content-card md-content-card--hover border-border/60 shadow-elevation-1">
           <CardHeader>
             <CardTitle className="text-2xl">{t('productionPerformance')}</CardTitle>
             <p className="text-sm text-muted-foreground">{t('productionPerformanceDescription')}</p>
@@ -442,7 +439,7 @@ const Financial = () => {
         </div>
 
         {/* Investment Breakdown */}
-        <Card className="mb-8">
+        <Card className="mb-8 md-content-card md-content-card--hover border-border/60 shadow-elevation-1">
           <CardHeader>
             <CardTitle className="text-2xl">{t('investmentBreakdown')}</CardTitle>
             <p className="text-sm text-muted-foreground">{t('investmentBreakdownDescription')}</p>

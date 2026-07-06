@@ -1,13 +1,14 @@
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { getLocalizedLink } from '@/hooks/useLocalizedNavigate';
 import { useProducts, useProductCategories } from '@/hooks/useApi';
-import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { cn, resolveImageSrc } from '@/lib/utils';
 import { formatMessage, pickLocalized } from '@/lib/localize';
-import { ArrowLeft, Loader2, Factory, Package } from 'lucide-react';
+import { getProductIconName } from '@/lib/productIcons';
+import { ArrowLeft, Loader2, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PublicPageHeader, PublicShell } from '@/components/public/PublicShell';
+import { ProductCard } from '@/components/public/cards';
 import heroSlideOne from '@/assets/manganese/one.jpeg';
 import heroSlideTwo from '@/assets/manganese/two.jpg';
 import heroSlideThree from '@/assets/manganese/three.jpg';
@@ -65,7 +66,7 @@ const CategoryProducts = () => {
     return (
       <div className="pb-12 md:pb-16">
         <PublicPageHeader title={t('categoryNotFound')} centered />
-        <PublicShell className="flex flex-col items-center py-10 text-center">
+        <PublicShell className="flex flex-col items-center py-10 text-center keep-center">
           <p className="text-muted-foreground mb-4">{t('categoryNotFound')}</p>
           <Button onClick={() => navigate(getLocalizedLink('/products', language))}>
             {t('backToProducts')}
@@ -97,12 +98,12 @@ const CategoryProducts = () => {
 
       <PublicShell className="py-8 md:py-10">
         {categoryProducts.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="mb-6 p-6 rounded-full bg-muted">
+          <div className="flex flex-col items-center justify-center py-20 text-center keep-center animate-fade-in">
+            <div className="mb-6 rounded-full bg-muted p-6">
               <Package className="h-16 w-16 text-muted-foreground" />
             </div>
-            <h2 className="text-2xl font-semibold mb-3">{t('noProductsYet')}</h2>
-            <p className="text-muted-foreground text-center max-w-md">
+            <h2 className="mb-3 text-2xl font-semibold">{t('noProductsYet')}</h2>
+            <p className="max-w-md text-center text-muted-foreground">
               {formatMessage(t('noProductsYetDesc'), { category: categoryName })}
             </p>
           </div>
@@ -111,7 +112,7 @@ const CategoryProducts = () => {
             className="grid grid-cols-1 items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:mx-auto"
             dir={isRTL ? 'rtl' : 'ltr'}
           >
-            {categoryProducts.map((product) => {
+            {categoryProducts.map((product, index) => {
               const imageSrc = resolveImageSrc(product.image, {
                 cacheKey: product.updated_at || product.updatedAt,
                 fallback: productFallbackImages[product.id % productFallbackImages.length],
@@ -120,38 +121,23 @@ const CategoryProducts = () => {
               const productDescription = pickLocalized(product, 'description', language);
 
               return (
-                <Link key={product.id} to={getLocalizedLink(`/product/${product.id}`, language)} className="block h-full">
-                  <Card className="group flex h-full cursor-pointer flex-col overflow-hidden border border-border shadow-lg transition-all hover:shadow-2xl hover:-translate-y-2">
-                    <div className="relative h-64 shrink-0 overflow-hidden bg-muted">
-                      <img
-                        src={imageSrc}
-                        alt={productName}
-                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                        loading="lazy"
-                        key={`${product.id}-${product.updated_at || Date.now()}`}
-                        onError={(event) => {
-                          const target = event.currentTarget;
-                          const fallback = productFallbackImages[product.id % productFallbackImages.length];
-                          if (target.src !== fallback) {
-                            target.src = fallback;
-                          }
-                        }}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/50 to-transparent" />
-                      <div className="absolute end-4 top-4 rounded-full bg-primary/90 p-3 backdrop-blur">
-                        <Factory className="h-6 w-6 text-white" />
-                      </div>
-                    </div>
-                    <CardContent className="flex flex-1 flex-col p-6">
-                      <CardTitle className="mb-3 line-clamp-2 min-h-[3.5rem] text-2xl">
-                        {productName}
-                      </CardTitle>
-                      <p className="line-clamp-3 flex-1 text-sm leading-relaxed text-muted-foreground">
-                        {productDescription}
-                      </p>
-                    </CardContent>
-                  </Card>
-                </Link>
+                <ProductCard
+                  key={product.id}
+                  to={getLocalizedLink(`/product/${product.id}`, language)}
+                  imageSrc={imageSrc}
+                  imageAlt={productName}
+                  title={productName}
+                  description={productDescription}
+                  iconName={getProductIconName(product.name ?? productName)}
+                  index={index}
+                  onImageError={(event) => {
+                    const target = event.currentTarget;
+                    const fallback = productFallbackImages[product.id % productFallbackImages.length];
+                    if (target.src !== fallback) {
+                      target.src = fallback;
+                    }
+                  }}
+                />
               );
             })}
           </div>
