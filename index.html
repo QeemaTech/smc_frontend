@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SMC - Sinai Manganese Company | Egypt's Leading Manganese Producer</title>
+    <meta name="description" content="Sinai Manganese Co. is Egypt's first and largest manganese ore producer, established 1957. Producing high-quality Silicomanganese at Abu-Zinima, Sinai." />
+    <meta name="author" content="Sinai Manganese Company" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Google Material Design fonts + icons -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Roboto+Flex:opsz,wght@8..144,400;8..144,500;8..144,600;8..144,700&family=Tajawal:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
+      rel="stylesheet"
+    />
+
+    <meta property="og:title" content="SMC - Sinai Manganese Company" />
+    <meta property="og:description" content="Egypt's first and largest manganese ore producer since 1957" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/favicon.png" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@SMCEgypt" />
+    <meta name="twitter:image" content="/favicon.png" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+  </head>
+
+  <body>
+    <script>
+      (function () {
+        try {
+          if (window.location.pathname.startsWith("/dashboard")) {
+            var theme = localStorage.getItem("dashboardTheme");
+            if (theme !== "light") {
+              document.documentElement.classList.add("dark");
+            }
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
