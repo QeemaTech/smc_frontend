@@ -586,19 +586,19 @@ const PageContentEditor = ({ fixedPage }: PageContentEditorProps) => {
   };
 
   const getSections = (lang: 'en' | 'ar'): PageSection[] =>
-    parsePageSections(content[selectedPage]?.[lang]?.[SECTIONS_KEY]);
+    parsePageSections(content[selectedPage]?.[lang]?.[SECTIONS_KEY], { keepEmpty: true });
 
   const setSections = (lang: 'en' | 'ar', sections: PageSection[]) => {
-    setContent({
-      ...content,
+    setContent((prev) => ({
+      ...prev,
       [selectedPage]: {
-        ...content[selectedPage],
+        ...(prev[selectedPage] || { en: {}, ar: {} }),
         [lang]: {
-          ...(content[selectedPage]?.[lang] || {}),
-          [SECTIONS_KEY]: serializePageSections(sections),
+          ...(prev[selectedPage]?.[lang] || {}),
+          [SECTIONS_KEY]: serializePageSections(sections, { keepEmpty: true }),
         },
       },
-    });
+    }));
   };
 
   const handleAddSection = (lang: 'en' | 'ar') => {
