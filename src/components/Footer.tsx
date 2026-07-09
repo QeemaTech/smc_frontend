@@ -37,6 +37,7 @@ const Footer = () => {
     { name: t('products'), href: getLocalizedLink('/products', language), icon: 'inventory_2' as const },
     { name: t('news'), href: getLocalizedLink('/news', language), icon: 'newspaper' as const },
     { name: t('contact'), href: getLocalizedLink('/contact', language), icon: 'mail' as const },
+    { name: t('complaints'), href: getLocalizedLink('/complaints', language), icon: 'support_agent' as const },
   ];
 
   const socialLinks = [

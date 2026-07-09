@@ -725,7 +725,7 @@
   }
 
   .header-complaints-cta {
-    @apply inline-flex;
+    /* Visibility: use Tailwind on the element (hidden sm:inline-flex) */
   }
 
   .lang-switch-btn {

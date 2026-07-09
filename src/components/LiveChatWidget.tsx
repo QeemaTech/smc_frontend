@@ -148,16 +148,20 @@ const LiveChatWidget = () => {
     return (
       <div
         className={cn(
-          'fixed bottom-6 z-50',
+          'fixed bottom-6 z-[60]',
           isRTL ? 'left-6' : 'right-6'
         )}
       >
         <Button
           onClick={() => setIsOpen(true)}
-          className="h-16 w-16 rounded-full bg-[#204393] hover:bg-[#1b356f] text-white shadow-2xl flex items-center justify-center p-0 transition-all hover:scale-110"
+          className="h-14 gap-2 rounded-full bg-[#204393] px-4 text-white shadow-2xl transition-all hover:scale-105 hover:bg-[#1b356f] sm:h-16 sm:px-5"
           size="lg"
+          aria-label={t('liveChat') || 'Live Chat'}
         >
-          <MessageCircle className="h-8 w-8" />
+          <MessageCircle className="h-7 w-7 shrink-0 sm:h-8 sm:w-8" />
+          <span className="hidden text-sm font-medium sm:inline">
+            {t('liveChat') || 'Live Chat'}
+          </span>
         </Button>
       </div>
     );
@@ -166,9 +170,9 @@ const LiveChatWidget = () => {
   return (
     <div
       className={cn(
-        'fixed bottom-6 z-50 transition-all duration-300',
+        'fixed bottom-6 z-[60] transition-all duration-300',
         isRTL ? 'left-6' : 'right-6',
-        isMinimized ? 'w-80' : 'w-96'
+        isMinimized ? 'w-80' : 'w-[min(24rem,calc(100vw-3rem))]'
       )}
     >
       <Card className="backdrop-blur-xl bg-white/95 border border-border shadow-2xl">

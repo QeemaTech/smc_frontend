@@ -509,6 +509,14 @@ const Home = () => {
         </PublicShell>
       </section>
 
+      {homeSections.length > 0 ? (
+        <section className="py-12 md:py-16">
+          <PublicShell>
+            <PageSections sections={homeSections} />
+          </PublicShell>
+        </section>
+      ) : null}
+
       {/* Partners */}
       <section className="home-partners">
         <PublicShell>
@@ -611,14 +619,6 @@ const Home = () => {
           </div>
         </PublicShell>
       </section>
-
-      {homeSections.length > 0 ? (
-        <section className="py-12 md:py-16">
-          <PublicShell>
-            <PageSections sections={homeSections} />
-          </PublicShell>
-        </section>
-      ) : null}
     </div>
   );
 };

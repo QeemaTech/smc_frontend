@@ -167,7 +167,7 @@ const Header = () => {
           <Link
             to={complaintsHref}
             className={cn(
-              "header-complaints-cta hidden shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-2",
+              "header-complaints-cta hidden shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-2 sm:inline-flex",
               "text-[13px] font-medium leading-none transition-all duration-200 xl:text-sm",
               isComplaintsActive
                 ? "bg-primary text-primary-foreground shadow-sm"
