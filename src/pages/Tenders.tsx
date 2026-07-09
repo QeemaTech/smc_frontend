@@ -10,12 +10,14 @@ import { getLocalizedLink } from '@/hooks/useLocalizedNavigate';
 import { pickLocalized } from '@/lib/localize';
 import { useTenders, useSubmitTender } from '@/hooks/useApi';
 import { toast } from 'sonner';
-import { usePageHero } from '@/hooks/usePageContent';
+import { usePageHero, usePageSections } from '@/hooks/usePageContent';
 import { PublicPageHeader, PublicShell } from '@/components/public/PublicShell';
 import { ContentCard } from '@/components/public/cards';
+import { PageSections } from '@/components/public/ContentSection';
 
 const Tenders = () => {
   const { t, language } = useLanguage();
+  const sections = usePageSections('tenders');
   const hero = usePageHero('tenders', {
     title: t('tenders'),
     description: t('tendersSubtitle'),
@@ -176,6 +178,8 @@ const Tenders = () => {
             <Link to={getLocalizedLink('/contact', language)}>{t('contactUs')}</Link>
           </Button>
         </div>
+
+        <PageSections sections={sections} />
       </PublicShell>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

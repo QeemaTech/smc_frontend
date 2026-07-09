@@ -1,15 +1,17 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { usePageHero, usePageContent } from '@/hooks/usePageContent';
+import { usePageHero, usePageContent, usePageSections } from '@/hooks/usePageContent';
 import { PublicPageHeader, PublicShell } from '@/components/public/PublicShell';
 import { FeatureCard, ContentCard } from '@/components/public/cards';
+import { PageSections } from '@/components/public/ContentSection';
 
 const About = () => {
   const { t } = useLanguage();
   const location = useLocation();
   const hash = location.hash.replace('#', '');
   const isVisionPage = hash === 'vision';
+  const sections = usePageSections('about');
 
   const defaultHero = usePageHero('about', {
     title: t('aboutTitle'),
@@ -128,6 +130,8 @@ const About = () => {
             {valuesText}
           </p>
         </ContentCard>
+
+        <PageSections sections={sections} />
       </PublicShell>
     </div>
   );

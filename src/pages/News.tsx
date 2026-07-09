@@ -4,9 +4,10 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { getLocalizedLink } from '@/hooks/useLocalizedNavigate';
 import { resolveImageSrc } from '@/lib/utils';
 import { pickLocalized } from '@/lib/localize';
-import { usePageHero } from '@/hooks/usePageContent';
+import { usePageHero, usePageSections } from '@/hooks/usePageContent';
 import { PublicPageHeader, PublicShell } from '@/components/public/PublicShell';
 import { NewsCard } from '@/components/public/cards';
+import { PageSections } from '@/components/public/ContentSection';
 import { useNews } from '@/hooks/useApi';
 import slideOne from '@/assets/manganese/one.jpeg';
 import slideTwo from '@/assets/manganese/two.jpg';
@@ -17,6 +18,7 @@ import portfolio16 from '@/assets/manganese/portfolio16.jpg';
 
 const News = () => {
   const { t, language } = useLanguage();
+  const sections = usePageSections('news');
   const hero = usePageHero('news', {
     title: t('news'),
     description: t('newsPageSubtitle'),
@@ -76,6 +78,9 @@ const News = () => {
             ))}
           </div>
         )}
+        <div className="mt-12">
+          <PageSections sections={sections} />
+        </div>
       </PublicShell>
     </div>
   );

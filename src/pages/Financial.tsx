@@ -4,12 +4,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ContentCard } from '@/components/public/cards';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from '@/components/ui/chart';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { usePageHero } from '@/hooks/usePageContent';
+import { usePageHero, usePageSections } from '@/hooks/usePageContent';
 import { PublicPageHeader, PublicShell } from '@/components/public/PublicShell';
+import { PageSections } from '@/components/public/ContentSection';
 import { LineChart, Line, BarChart, Bar, AreaChart, Area, PieChart as RechartsPieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, ResponsiveContainer, ComposedChart } from 'recharts';
 
 const Financial = () => {
   const { t } = useLanguage();
+  const sections = usePageSections('financial');
   const hero = usePageHero('financial', {
     title: t('financial'),
     description: t('financialSubtitle'),
@@ -497,6 +499,8 @@ const Financial = () => {
             </div>
           </CardContent>
         </Card>
+
+        <PageSections sections={sections} />
       </PublicShell>
     </div>
   );

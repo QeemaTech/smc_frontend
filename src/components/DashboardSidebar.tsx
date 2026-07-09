@@ -40,7 +40,6 @@ const DashboardSidebar = () => {
       path: "/dashboard/categories",
     },
     { icon: "newspaper", label: t("news") || "News", path: "/dashboard/news" },
-    { icon: "anchor", label: t("privatePortContent") || "Private Port", path: "/dashboard/private-port" },
     { icon: "article", label: t("pageContent") || "Page Content", path: "/dashboard/pages" },
     { icon: "image", label: t("heroBanners") || "Hero Banners", path: "/dashboard/banners" },
     { icon: "photo_library", label: t("mediaLibrary") || "Media Library", path: "/dashboard/media" },

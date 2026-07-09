@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Save, FileText, Globe, Plus, X, Upload } from 'lucide-react';
+import { Save, Globe, Plus, X, Upload, ChevronUp, ChevronDown } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -9,7 +9,15 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { cn, resolveImageSrc } from '@/lib/utils';
+import { resolveImageSrc } from '@/lib/utils';
+import {
+  SECTIONS_KEY,
+  createEmptySection,
+  normalizeSectionsForSave,
+  parsePageSections,
+  serializePageSections,
+  type PageSection,
+} from '@/lib/pageSections';
 import { toast } from 'sonner';
 import ContactDataEditor from '@/components/dashboard/ContactDataEditor';
 
@@ -21,6 +29,7 @@ interface PageContent {
 }
 
 interface PageContentEditorProps {
+  /** Optional: lock editor to a single page (kept for compatibility). */
   fixedPage?: string;
 }
 
@@ -258,12 +267,10 @@ const PageContentEditor = ({ fixedPage }: PageContentEditorProps) => {
     },
   });
 
-  const [editingKey, setEditingKey] = useState<{ page: string; lang: string; key: string } | null>(null);
-  const [newKeyName, setNewKeyName] = useState('');
   const galleryFileInputRef = useRef<HTMLInputElement>(null);
-
   const GALLERY_IMAGES_KEY = 'galleryImages';
-  const HIDDEN_HOME_KEYS = new Set([GALLERY_IMAGES_KEY]);
+  const HIDDEN_KEYS = new Set([GALLERY_IMAGES_KEY, SECTIONS_KEY]);
+  const PAGES_WITHOUT_SECTIONS = new Set(['footer']);
 
   const parseGalleryImages = (raw?: string): string[] => {
     if (!raw) return [];
@@ -462,28 +469,51 @@ const PageContentEditor = ({ fixedPage }: PageContentEditorProps) => {
     try {
       const { pageContentAPI } = await import('@/services/api');
 
-      let contentToSave = content;
-      const currentGalleryImages = getGalleryImages();
+      let contentToSave: PageContent = { ...content };
+
+      // Normalize sections for every page/lang before save
+      Object.keys(contentToSave).forEach((page) => {
+        (['en', 'ar'] as const).forEach((lang) => {
+          const raw = contentToSave[page]?.[lang]?.[SECTIONS_KEY];
+          if (raw === undefined) return;
+          const normalized = normalizeSectionsForSave(parsePageSections(raw));
+          contentToSave = {
+            ...contentToSave,
+            [page]: {
+              ...contentToSave[page],
+              [lang]: {
+                ...contentToSave[page][lang],
+                [SECTIONS_KEY]: serializePageSections(normalized),
+              },
+            },
+          };
+        });
+      });
+
+      const currentGalleryImages = parseGalleryImages(
+        contentToSave.home?.en?.[GALLERY_IMAGES_KEY],
+      );
 
       if (currentGalleryImages.some((image) => image.startsWith('data:'))) {
         const normalizedGalleryImages = await normalizeGalleryImagesForSave(currentGalleryImages);
         const serializedGallery = JSON.stringify(normalizedGalleryImages);
         contentToSave = {
-          ...content,
+          ...contentToSave,
           home: {
-            ...content.home,
+            ...contentToSave.home,
             en: {
-              ...content.home.en,
+              ...contentToSave.home.en,
               [GALLERY_IMAGES_KEY]: serializedGallery,
             },
             ar: {
-              ...content.home.ar,
+              ...contentToSave.home.ar,
               [GALLERY_IMAGES_KEY]: serializedGallery,
             },
           },
         };
-        setContent(contentToSave);
       }
+
+      setContent(contentToSave);
       
       // Convert content object to array format for bulk update
       const contentArray: Array<{ page: string; key: string; valueEn: string | null; valueAr: string | null }> = [];
@@ -499,6 +529,15 @@ const PageContentEditor = ({ fixedPage }: PageContentEditorProps) => {
             });
             return;
           }
+          if (key === SECTIONS_KEY) {
+            contentArray.push({
+              page,
+              key,
+              valueEn: value || '[]',
+              valueAr: pageData.ar?.[key] || '[]',
+            });
+            return;
+          }
           contentArray.push({
             page,
             key,
@@ -509,6 +548,9 @@ const PageContentEditor = ({ fixedPage }: PageContentEditorProps) => {
         // Also include Arabic-only keys
         Object.entries(pageData.ar || {}).forEach(([key, value]) => {
           if (page === 'home' && key === GALLERY_IMAGES_KEY) {
+            return;
+          }
+          if (key === SECTIONS_KEY) {
             return;
           }
           if (!pageData.en?.[key]) {
@@ -543,49 +585,69 @@ const PageContentEditor = ({ fixedPage }: PageContentEditorProps) => {
     }
   };
 
-  const handleAddField = (page: string, lang: string) => {
-    if (!newKeyName.trim()) {
-      toast.error('Please enter a field name');
-      return;
-    }
-    
-    const key = newKeyName.trim();
+  const getSections = (lang: 'en' | 'ar'): PageSection[] =>
+    parsePageSections(content[selectedPage]?.[lang]?.[SECTIONS_KEY]);
+
+  const setSections = (lang: 'en' | 'ar', sections: PageSection[]) => {
     setContent({
       ...content,
-      [page]: {
-        ...content[page],
+      [selectedPage]: {
+        ...content[selectedPage],
         [lang]: {
-          ...content[page][lang],
-          [key]: '',
+          ...(content[selectedPage]?.[lang] || {}),
+          [SECTIONS_KEY]: serializePageSections(sections),
         },
       },
     });
-    setNewKeyName('');
-    toast.success('Field added');
+  };
+
+  const handleAddSection = (lang: 'en' | 'ar') => {
+    setSections(lang, [...getSections(lang), createEmptySection()]);
+  };
+
+  const handleUpdateSection = (
+    lang: 'en' | 'ar',
+    index: number,
+    field: keyof PageSection,
+    value: string,
+  ) => {
+    const sections = [...getSections(lang)];
+    sections[index] = { ...sections[index], [field]: value };
+    setSections(lang, sections);
+  };
+
+  const handleDeleteSection = (lang: 'en' | 'ar', index: number) => {
+    setSections(
+      lang,
+      getSections(lang).filter((_, i) => i !== index),
+    );
+  };
+
+  const handleMoveSection = (lang: 'en' | 'ar', index: number, direction: -1 | 1) => {
+    const sections = [...getSections(lang)];
+    const target = index + direction;
+    if (target < 0 || target >= sections.length) return;
+    [sections[index], sections[target]] = [sections[target], sections[index]];
+    setSections(lang, sections);
   };
 
   const handleDeleteField = (page: string, lang: string, key: string) => {
+    if (key === SECTIONS_KEY || key === GALLERY_IMAGES_KEY) return;
     const newContent = { ...content };
     delete newContent[page][lang][key];
     setContent(newContent);
-    toast.success('Field deleted');
+    toast.success(isRTL ? 'تم حذف الحقل' : 'Field deleted');
   };
 
   const currentContent = content[selectedPage] || { en: {}, ar: {} };
-
-  const pageTitle = fixedPage === 'privatePort'
-    ? t('privatePortContent') || 'Private Port Page'
-    : t('pageContent') || 'Page Content';
-  const pageDescription = fixedPage === 'privatePort'
-    ? t('editPrivatePortContent') || 'Edit private port page content'
-    : t('editPageContent') || 'Edit content for all pages';
+  const showSections = !PAGES_WITHOUT_SECTIONS.has(selectedPage);
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold text-foreground">{pageTitle}</h2>
-          <p className="text-muted-foreground mt-1">{pageDescription}</p>
+          <h2 className="text-3xl font-bold text-foreground">{t('pageContent') || 'Page Content'}</h2>
+          <p className="text-muted-foreground mt-1">{t('editPageContent') || 'Edit content for all pages'}</p>
         </div>
         <Button onClick={handleSave} >
           <Save className="h-4 w-4 mr-2" />
@@ -711,7 +773,7 @@ const PageContentEditor = ({ fixedPage }: PageContentEditorProps) => {
               <TabsContent key={lang} value={lang} className="space-y-4">
                 <div className="space-y-4">
                   {Object.entries(currentContent[lang] || {})
-                    .filter(([key]) => !(selectedPage === 'home' && HIDDEN_HOME_KEYS.has(key)))
+                    .filter(([key]) => !HIDDEN_KEYS.has(key))
                     .map(([key, value]) => (
                     <div key={key} className="space-y-2 p-4 backdrop-blur-xl bg-muted/40 border border-border rounded-lg">
                       <div className="flex items-center justify-between">
@@ -746,31 +808,110 @@ const PageContentEditor = ({ fixedPage }: PageContentEditorProps) => {
                     </div>
                   ))}
 
-                  {/* Add New Field */}
-                  <Card className="backdrop-blur-xl bg-muted/40 border-border">
-                    <CardContent className="p-4">
-                      <div className="flex gap-2">
-                        <Input
-                          value={newKeyName}
-                          onChange={(e) => setNewKeyName(e.target.value)}
-                          placeholder={lang === 'ar' ? 'اسم الحقل الجديد' : 'New field name'}
-                          className="bg-muted/50 border-border text-foreground flex-1"
-                          onKeyPress={(e) => {
-                            if (e.key === 'Enter') {
-                              handleAddField(selectedPage, lang);
-                            }
-                          }}
-                        />
-                        <Button
-                          onClick={() => handleAddField(selectedPage, lang)}
-                          
-                        >
-                          <Plus className="h-4 w-4 mr-2" />
-                          {t('addField') || 'Add Field'}
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  {showSections ? (
+                    <Card className="backdrop-blur-xl bg-muted/40 border-border">
+                      <CardHeader className="pb-3">
+                        <div className="flex items-center justify-between gap-3">
+                          <div>
+                            <CardTitle className="text-lg">
+                              {isRTL ? 'الأقسام' : 'Sections'}
+                            </CardTitle>
+                            <p className="mt-1 text-sm text-muted-foreground">
+                              {isRTL
+                                ? 'أضف أقسام محتوى تظهر بعد المحتوى الثابت في الصفحة'
+                                : 'Add content sections shown after the static page content'}
+                            </p>
+                          </div>
+                          <Button type="button" onClick={() => handleAddSection(lang)}>
+                            <Plus className="h-4 w-4 mr-2" />
+                            {isRTL ? 'إضافة قسم' : 'Add Section'}
+                          </Button>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        {getSections(lang).length === 0 ? (
+                          <div className="rounded-lg border border-dashed border-border py-8 text-center text-sm text-muted-foreground">
+                            {isRTL
+                              ? 'لا توجد أقسام بعد. اضغط "إضافة قسم" للبدء.'
+                              : 'No sections yet. Click "Add Section" to start.'}
+                          </div>
+                        ) : (
+                          getSections(lang).map((section, index) => (
+                            <div
+                              key={`${lang}-section-${index}`}
+                              className="space-y-3 rounded-lg border border-border bg-background/60 p-4"
+                            >
+                              <div className="flex items-center justify-between gap-2">
+                                <Label className="font-medium text-foreground">
+                                  {isRTL ? `قسم ${index + 1}` : `Section ${index + 1}`}
+                                </Label>
+                                <div className="flex items-center gap-1">
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-7 w-7 p-0"
+                                    onClick={() => handleMoveSection(lang, index, -1)}
+                                    disabled={index === 0}
+                                  >
+                                    <ChevronUp className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-7 w-7 p-0"
+                                    onClick={() => handleMoveSection(lang, index, 1)}
+                                    disabled={index === getSections(lang).length - 1}
+                                  >
+                                    <ChevronDown className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-7 w-7 p-0 text-red-400 hover:bg-red-500/20"
+                                    onClick={() => handleDeleteSection(lang, index)}
+                                  >
+                                    <X className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              </div>
+                              <div className="space-y-2">
+                                <Label className="text-sm text-muted-foreground">
+                                  {isRTL ? 'العنوان' : 'Title'}
+                                </Label>
+                                <Input
+                                  value={section.title}
+                                  onChange={(e) =>
+                                    handleUpdateSection(lang, index, 'title', e.target.value)
+                                  }
+                                  placeholder={isRTL ? 'عنوان القسم' : 'Section title'}
+                                  className="bg-muted/50 border-border text-foreground"
+                                  dir={lang === 'ar' ? 'rtl' : 'ltr'}
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label className="text-sm text-muted-foreground">
+                                  {isRTL ? 'المحتوى' : 'Body'}
+                                </Label>
+                                <Textarea
+                                  value={section.body}
+                                  onChange={(e) =>
+                                    handleUpdateSection(lang, index, 'body', e.target.value)
+                                  }
+                                  placeholder={isRTL ? 'محتوى القسم' : 'Section content'}
+                                  rows={4}
+                                  className="bg-muted/50 border-border text-foreground"
+                                  dir={lang === 'ar' ? 'rtl' : 'ltr'}
+                                />
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </CardContent>
+                    </Card>
+                  ) : null}
                 </div>
               </TabsContent>
             ))}

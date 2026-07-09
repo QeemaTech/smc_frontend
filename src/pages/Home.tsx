@@ -14,7 +14,8 @@ import { getLocalizedLink } from '@/hooks/useLocalizedNavigate';
 import { pickLocalized, pickLocalizedBannerField } from '@/lib/localize';
 import { cn, resolveImageSrc } from '@/lib/utils';
 import { useProducts, useProductCategories, useClients, useCreateContact, useBanners } from '@/hooks/useApi';
-import { usePageContent, usePageContentJson, useSettings } from '@/hooks/usePageContent';
+import { usePageContent, usePageContentJson, usePageSections, useSettings } from '@/hooks/usePageContent';
+import { PageSections } from '@/components/public/ContentSection';
 import { formatAllPhoneNumbers } from '@/lib/contactDisplay';
 import { toast } from 'sonner';
 import heroSlideOne from '@/assets/manganese/one.jpeg';
@@ -205,6 +206,7 @@ const Home = () => {
     'gallerySectionDescription',
     t('productSilicomanganeseDesc'),
   );
+  const homeSections = usePageSections('home');
   const cmsGalleryImages = usePageContentJson<string[]>('home', 'galleryImages', []);
   const silicomanganeseImages = useMemo(() => {
     if (Array.isArray(cmsGalleryImages) && cmsGalleryImages.length > 0) {
@@ -609,6 +611,14 @@ const Home = () => {
           </div>
         </PublicShell>
       </section>
+
+      {homeSections.length > 0 ? (
+        <section className="py-12 md:py-16">
+          <PublicShell>
+            <PageSections sections={homeSections} />
+          </PublicShell>
+        </section>
+      ) : null}
     </div>
   );
 };

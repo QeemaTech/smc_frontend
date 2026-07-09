@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { parsePageSections, type PageSection } from "@/lib/pageSections";
 
 interface PageContent {
   [key: string]: {
@@ -432,6 +433,13 @@ export const usePageContentJson = <T>(
   } catch {
     return fallback;
   }
+};
+
+/** CMS-driven dynamic sections for a page (empty array when none). */
+export const usePageSections = (page: string): PageSection[] => {
+  const raw = usePageContent(page, "sections", "[]");
+  if (!raw || raw === "sections") return [];
+  return parsePageSections(raw);
 };
 
 const defaultSettings = {

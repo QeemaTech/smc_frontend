@@ -5,7 +5,8 @@ import { getLocalizedLink } from '@/hooks/useLocalizedNavigate';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PublicPageHeader, PublicShell } from '@/components/public/PublicShell';
 import { ProductCard } from '@/components/public/cards';
-import { usePageHero } from '@/hooks/usePageContent';
+import { usePageHero, usePageSections } from '@/hooks/usePageContent';
+import { PageSections } from '@/components/public/ContentSection';
 import { cn, resolveImageSrc } from '@/lib/utils';
 import { pickLocalized } from '@/lib/localize';
 import { getProductIconName } from '@/lib/productIcons';
@@ -28,6 +29,7 @@ const productFallbackImages = [
 
 const ProductsMain = () => {
   const { t, language, isRTL } = useLanguage();
+  const sections = usePageSections('products');
   const hero = usePageHero('products', {
     badge: t('productsEyebrow'),
     title: t('ourProductsHeading'),
@@ -182,6 +184,9 @@ const ProductsMain = () => {
             ))}
           </Tabs>
         )}
+        <div className="mt-12">
+          <PageSections sections={sections} />
+        </div>
       </PublicShell>
     </div>
   );

@@ -8,12 +8,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { usePageHero } from '@/hooks/usePageContent';
+import { usePageHero, usePageSections } from '@/hooks/usePageContent';
 import heroSlideTwo from '@/assets/manganese/two.jpg';
 import { PublicPageHeader, PublicShell } from '@/components/public/PublicShell';
+import { PageSections } from '@/components/public/ContentSection';
 
 const Complaints = () => {
   const { t, isRTL } = useLanguage();
+  const sections = usePageSections('complaints');
   const hero = usePageHero('complaints', {
     badge: t('complaintsBadge'),
     title: t('complaintsTitle'),
@@ -106,7 +108,8 @@ const Complaints = () => {
         </div>
       </PublicPageHeader>
 
-      <PublicShell className="grid gap-10 py-8 md:py-10 lg:grid-cols-[minmax(0,1fr)_360px]">
+      <PublicShell className="space-y-12 py-8 md:py-10">
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_360px]">
         <Card className="rounded-[32px] border border-border shadow-2xl">
           <CardContent className="p-10">
             <div className="mb-8 space-y-2 text-start">
@@ -214,6 +217,9 @@ const Complaints = () => {
             </CardContent>
           </Card>
         </div>
+        </div>
+
+        <PageSections sections={sections} />
       </PublicShell>
     </div>
   );

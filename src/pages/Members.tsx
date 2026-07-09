@@ -3,12 +3,14 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { pickLocalized } from '@/lib/localize';
 import { resolveImageSrc } from '@/lib/utils';
 import { useMembers } from '@/hooks/useApi';
-import { usePageHero } from '@/hooks/usePageContent';
+import { usePageHero, usePageSections } from '@/hooks/usePageContent';
 import { PublicPageHeader, PublicShell } from '@/components/public/PublicShell';
 import { ContentCard } from '@/components/public/cards';
+import { PageSections } from '@/components/public/ContentSection';
 
 const Members = () => {
   const { t, language, isRTL } = useLanguage();
+  const sections = usePageSections('members');
   const hero = usePageHero('members', {
     title: t('boardMembersTitle'),
     description: t('boardMembersSubtitle'),
@@ -71,6 +73,9 @@ const Members = () => {
         )}
 
         <p className="mt-12 text-start text-muted-foreground">{t('membersGovernanceNote')}</p>
+        <div className="mt-12">
+          <PageSections sections={sections} />
+        </div>
       </PublicShell>
     </div>
   );

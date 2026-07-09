@@ -1,11 +1,13 @@
 import { Ship, Package, TrendingUp, Shield } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { usePageContent, usePageHero } from '@/hooks/usePageContent';
+import { usePageContent, usePageHero, usePageSections } from '@/hooks/usePageContent';
 import { PublicPageHeader, PublicShell } from '@/components/public/PublicShell';
 import { ContentCard } from '@/components/public/cards';
+import { PageSections } from '@/components/public/ContentSection';
 
 const PrivatePort = () => {
   const { t } = useLanguage();
+  const sections = usePageSections('privatePort');
   const hero = usePageHero('privatePort', {
     title: t('privatePort'),
     description: t('privatePortSubtitle'),
@@ -91,6 +93,8 @@ const PrivatePort = () => {
             </ContentCard>
           </div>
         </div>
+
+        <PageSections sections={sections} />
       </PublicShell>
     </div>
   );

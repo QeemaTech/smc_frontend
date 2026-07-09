@@ -5,18 +5,20 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useSettings, usePageHero, usePageContent } from '@/hooks/usePageContent';
+import { useSettings, usePageHero, usePageContent, usePageSections } from '@/hooks/usePageContent';
 import { useCreateContact } from '@/hooks/useApi';
 import { toast } from 'sonner';
 import heroSlideOne from '@/assets/manganese/one.jpeg';
 import mnFacility from '@/assets/manganese/portfolio14.jpg';
 import PhoneNumbers from '@/components/PhoneNumbers';
 import { PublicPageHeader, PublicShell } from '@/components/public/PublicShell';
+import { PageSections } from '@/components/public/ContentSection';
 
 const Contact = () => {
   const { t, language, isRTL } = useLanguage();
   const settings = useSettings();
   const createContact = useCreateContact();
+  const sections = usePageSections('contact');
   const hero = usePageHero('contact', {
     badge: t('contactSubtitle'),
     title: t('contactUs'),
@@ -241,6 +243,10 @@ const Contact = () => {
               </CardContent>
             </Card>
           </div>
+        </div>
+
+        <div className="mt-12">
+          <PageSections sections={sections} />
         </div>
       </PublicShell>
     </div>
