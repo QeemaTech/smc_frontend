@@ -28,6 +28,7 @@ import UsersManagement from "./pages/dashboard/UsersManagement";
 import MediaLibrary from "./pages/dashboard/MediaLibrary";
 import HeroBanners from "./pages/dashboard/HeroBanners";
 import PageContentEditor from "./pages/dashboard/PageContentEditor";
+import PrivatePortManagement from "./pages/dashboard/PrivatePortManagement";
 import Settings from "./pages/dashboard/Settings";
 import Statistics from "./pages/dashboard/Statistics";
 import FinancialManagement from "./pages/dashboard/FinancialManagement";
@@ -201,6 +202,7 @@ const AppRoutes = () => {
             <Route path="categories" element={<CategoriesManagement />} />
             <Route path="news" element={<NewsManagement />} />
             <Route path="pages" element={<PageContentEditor />} />
+            <Route path="private-port" element={<PrivatePortManagement />} />
             <Route path="banners" element={<HeroBanners />} />
             <Route path="media" element={<MediaLibrary />} />
             <Route path="contacts" element={<ContactsManagement />} />

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Save, FileText, Globe, Plus, X, Upload } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,9 +20,15 @@ interface PageContent {
   };
 }
 
-const PageContentEditor = () => {
+interface PageContentEditorProps {
+  fixedPage?: string;
+}
+
+const PageContentEditor = ({ fixedPage }: PageContentEditorProps) => {
   const { t, isRTL } = useLanguage();
-  const [selectedPage, setSelectedPage] = useState('home');
+  const [searchParams] = useSearchParams();
+  const initialPage = fixedPage || searchParams.get('page') || 'home';
+  const [selectedPage, setSelectedPage] = useState(initialPage);
   const [content, setContent] = useState<PageContent>({
     home: {
       en: {
@@ -173,10 +180,48 @@ const PageContentEditor = () => {
       en: {
         heroTitle: 'Private Port',
         heroDescription: 'Our private port facility ensures efficient and reliable export of our products to customers worldwide',
+        feature1Title: 'Modern Facilities',
+        feature1Desc: 'State-of-the-art port facilities equipped for efficient loading and shipping operations',
+        feature2Title: 'High Capacity',
+        feature2Desc: 'Capable of handling large volumes of manganese ore and silicomanganese shipments',
+        feature3Title: 'Strategic Location',
+        feature3Desc: 'Located at Abu-Zinima for optimal access to international shipping routes',
+        feature4Title: 'Safety Standards',
+        feature4Desc: 'Strict adherence to international safety and environmental regulations',
+        capabilitiesTitle: 'Port Capabilities',
+        loadingSectionTitle: 'Loading & Shipping',
+        loadingItem1: 'Direct loading to vessels with minimal handling',
+        loadingItem2: 'Multiple loading points for efficient operations',
+        loadingItem3: '24/7 operational capability',
+        loadingItem4: 'Advanced weighing and quality control systems',
+        storageSectionTitle: 'Storage & Handling',
+        storageItem1: 'Covered storage facilities to protect products',
+        storageItem2: 'Segregated storage areas for different grades',
+        storageItem3: 'Modern material handling equipment',
+        storageItem4: 'Dust suppression systems',
       },
       ar: {
         heroTitle: 'الميناء الخاص',
         heroDescription: 'تضمن منشأة الميناء الخاص لدينا تصديراً فعالاً وموثوقاً لمنتجاتنا للعملاء في جميع أنحاء العالم',
+        feature1Title: 'مرافق حديثة',
+        feature1Desc: 'مرافق ميناء حديثة مجهزة لعمليات التحميل والشحن الفعالة',
+        feature2Title: 'قدرة عالية',
+        feature2Desc: 'قادرة على التعامل مع أحجام كبيرة من شحنات خام المنجنيز وسيليكون المنجنيز',
+        feature3Title: 'موقع استراتيجي',
+        feature3Desc: 'يقع في أبو زنيمة للوصول الأمثل إلى طرق الشحن الدولية',
+        feature4Title: 'معايير السلامة',
+        feature4Desc: 'الالتزام الصارم بمعايير السلامة والبيئة الدولية',
+        capabilitiesTitle: 'قدرات الميناء',
+        loadingSectionTitle: 'التحميل والشحن',
+        loadingItem1: 'تحميل مباشر على السفن مع أقل قدر من المناولة',
+        loadingItem2: 'نقاط تحميل متعددة للعمليات الفعالة',
+        loadingItem3: 'قدرة تشغيلية على مدار الساعة',
+        loadingItem4: 'أنظمة وزن ومراقبة جودة متقدمة',
+        storageSectionTitle: 'التخزين والمعالجة',
+        storageItem1: 'منشآت تخزين مغطاة لحماية المنتجات',
+        storageItem2: 'مناطق تخزين منفصلة للدرجات المختلفة',
+        storageItem3: 'معدات معالجة مواد حديثة',
+        storageItem4: 'أنظمة قمع الغبار',
       },
     },
     members: {
@@ -330,6 +375,18 @@ const PageContentEditor = () => {
     setGalleryImages(getGalleryImages().filter((_, i) => i !== index));
     toast.success(isRTL ? 'تم حذف الصورة' : 'Image removed');
   };
+
+  useEffect(() => {
+    if (fixedPage) {
+      setSelectedPage(fixedPage);
+      return;
+    }
+
+    const pageFromQuery = searchParams.get('page');
+    if (pageFromQuery) {
+      setSelectedPage(pageFromQuery);
+    }
+  }, [fixedPage, searchParams]);
 
   useEffect(() => {
     // Load content from backend
@@ -516,12 +573,19 @@ const PageContentEditor = () => {
 
   const currentContent = content[selectedPage] || { en: {}, ar: {} };
 
+  const pageTitle = fixedPage === 'privatePort'
+    ? t('privatePortContent') || 'Private Port Page'
+    : t('pageContent') || 'Page Content';
+  const pageDescription = fixedPage === 'privatePort'
+    ? t('editPrivatePortContent') || 'Edit private port page content'
+    : t('editPageContent') || 'Edit content for all pages';
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold text-foreground">{t('pageContent') || 'Page Content'}</h2>
-          <p className="text-muted-foreground mt-1">{t('editPageContent') || 'Edit content for all pages'}</p>
+          <h2 className="text-3xl font-bold text-foreground">{pageTitle}</h2>
+          <p className="text-muted-foreground mt-1">{pageDescription}</p>
         </div>
         <Button onClick={handleSave} >
           <Save className="h-4 w-4 mr-2" />
@@ -531,21 +595,23 @@ const PageContentEditor = () => {
 
       <Card className="backdrop-blur-xl bg-card/90 border-border shadow-elevation-2">
         <CardHeader>
-          <div className="flex items-center gap-4">
-            <Label>{t('selectPage') || 'Select Page'}</Label>
-            <Select value={selectedPage} onValueChange={setSelectedPage}>
-              <SelectTrigger className="w-64 bg-muted/50 border-border text-foreground">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-popover border-border">
-                {pages.map((page) => (
-                  <SelectItem key={page.value} value={page.value}>
-                    {page.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          {!fixedPage ? (
+            <div className="flex items-center gap-4">
+              <Label>{t('selectPage') || 'Select Page'}</Label>
+              <Select value={selectedPage} onValueChange={setSelectedPage}>
+                <SelectTrigger className="w-64 bg-muted/50 border-border text-foreground">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border-border">
+                  {pages.map((page) => (
+                    <SelectItem key={page.value} value={page.value}>
+                      {page.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          ) : null}
         </CardHeader>
         <CardContent>
           {(selectedPage === 'footer' || selectedPage === 'contact') && (
