@@ -50,7 +50,6 @@ const DashboardSidebar = () => {
       badge: unreadContacts > 0 ? unreadContacts : undefined,
     },
     { icon: "feedback", label: t("complaints") || "Complaints", path: "/dashboard/complaints" },
-    { icon: "chat", label: t("chatMessages") || "Chat Messages", path: "/dashboard/chat", badge: 0 },
     { icon: "assignment", label: t("tenders") || "Tenders", path: "/dashboard/tenders" },
     {
       icon: "groups",

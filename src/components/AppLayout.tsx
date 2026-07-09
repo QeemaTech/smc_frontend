@@ -1,7 +1,6 @@
 import { useLocation } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
-import LiveChatWidget from './LiveChatWidget';
 import { cn } from '@/lib/utils';
 
 interface AppLayoutProps {
@@ -20,7 +19,6 @@ const AppLayout = ({ children }: AppLayoutProps) => {
         {children}
       </main>
       {!isLoginPage && !isDashboardPage && <Footer />}
-      {!isLoginPage && !isDashboardPage && <LiveChatWidget />}
     </div>
   );
 };

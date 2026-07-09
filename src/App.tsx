@@ -33,7 +33,6 @@ import Statistics from "./pages/dashboard/Statistics";
 import FinancialManagement from "./pages/dashboard/FinancialManagement";
 import ContactsManagement from "./pages/dashboard/ContactsManagement";
 import ComplaintsManagement from "./pages/dashboard/ComplaintsManagement";
-import ChatManagement from "./pages/dashboard/ChatManagement";
 import SEOSettings from "./pages/dashboard/SEOSettings";
 import TendersManagement from "./pages/dashboard/TendersManagement";
 import TenderDetails from "./pages/dashboard/TenderDetails";
@@ -43,7 +42,6 @@ import CategoriesManagement from "./pages/dashboard/CategoriesManagement";
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
-import LiveChatWidget from "./components/LiveChatWidget";
 import React from "react";
 
 const queryClient = new QueryClient({
@@ -205,7 +203,6 @@ const AppRoutes = () => {
             <Route path="media" element={<MediaLibrary />} />
             <Route path="contacts" element={<ContactsManagement />} />
             <Route path="complaints" element={<ComplaintsManagement />} />
-            <Route path="chat" element={<ChatManagement />} />
             <Route path="tenders" element={<TendersManagement />} />
             <Route path="tenders/:tenderId" element={<TenderDetails />} />
             <Route path="members" element={<MembersManagement />} />
